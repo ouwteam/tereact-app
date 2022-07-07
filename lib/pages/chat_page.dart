@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
+import 'package:tereact/components/chat_bubble.dart';
 import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/room_message.dart';
+import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/tereact_provider.dart';
+import 'package:tereact/providers/user_provider.dart';
 import 'package:tereact/widgets/circle_avatar_with_indicator.dart';
 import 'package:tereact/widgets/group_sparator.dart';
 
@@ -32,9 +33,11 @@ class _ChatPageState extends State<ChatPage> {
       GroupedItemScrollController();
   late List<RoomMessage> listMessages;
   late TereactProvider tp;
+  late UserProvider up;
   StreamController<List<RoomMessage>> streamMessage =
       StreamController<List<RoomMessage>>();
   final TextEditingController txtMessage = TextEditingController();
+  late User user;
 
   Stream<RoomMessage> handleSreamMessage(dynamic data) async* {
     log("masuk pak eko");
@@ -66,17 +69,20 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    Map<String, dynamic> payload = {"room_id": widget.room.id};
+    tp.socket.emit("unsubscribe_room", payload);
     super.dispose();
-    tp.socket.off("subscribe_room");
   }
 
   @override
   void initState() {
     super.initState();
     tp = Provider.of<TereactProvider>(context, listen: false);
+    up = Provider.of<UserProvider>(context, listen: false);
     listMessages = [];
+    user = up.getUserData!;
 
-    tp.getListMessages(roomId: widget.room.id, userId: 1).then((values) {
+    tp.getListMessages(roomId: widget.room.id, userId: user.id).then((values) {
       setState(() {
         listMessages.addAll(values
           ..sort(
@@ -84,6 +90,8 @@ class _ChatPageState extends State<ChatPage> {
               return m1.createdAt.compareTo(m2.createdAt);
             },
           ));
+
+        streamMessage.add(listMessages);
       });
     }).catchError((err) {
       log(err.toString());
@@ -135,9 +143,9 @@ class _ChatPageState extends State<ChatPage> {
           Container(
             margin: const EdgeInsets.only(bottom: 70),
             child: StreamBuilder(
-              initialData: listMessages,
               stream: streamMessage.stream,
               builder: (context, snapshot) {
+                log("${snapshot.hasData}");
                 if (snapshot.hasError) {
                   return const Text("Error loading message");
                 }
@@ -163,45 +171,27 @@ class _ChatPageState extends State<ChatPage> {
                       groupSeparatorBuilder: (message) =>
                           GroupSparator(message: message),
                       itemBuilder: (context, message) {
-                        bool isMine = message.userId == 1;
-                        return Align(
-                          alignment:
-                              isMine ? Alignment.topRight : Alignment.topLeft,
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            margin: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: isMine
-                                  ? const Color.fromARGB(255, 163, 206, 241)
-                                  : const Color.fromARGB(255, 226, 225, 225),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: isMine
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                              children: [
-                                Text(message.messageText),
-                                const SizedBox(height: 5),
-                                Text(
-                                  DateFormat.Hm().format(message.createdAt),
-                                  style: const TextStyle(fontSize: 9),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                        bool isMine = message.userId == user.id;
+                        return ChatBubble(isMine: isMine, message: message);
                       },
                     );
                   }
 
                   if (mesageItems.isEmpty) {
-                    return const Text("Loading..");
+                    return const Center(
+                      child: Text(
+                        "Tidak ada pesan",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
                   }
                 }
 
-                return const Text("Loading");
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.blue,
+                  ),
+                );
               },
             ),
           ),
@@ -228,7 +218,7 @@ class _ChatPageState extends State<ChatPage> {
                   IconButton(
                     onPressed: () {
                       tp.sendMessageToRoom(
-                        userId: 1,
+                        userId: user.id,
                         roomId: widget.room.id,
                         strMessage: txtMessage.text,
                       );

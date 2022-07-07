@@ -53,13 +53,16 @@ class TereactProvider extends ChangeNotifier {
 
   Future<List<Contact>> getListContacts({
     required int userId,
+    String? search,
   }) async {
-    log("getting some contacts..");
     try {
       String url = baseUrl + listContactsUrl;
       Response response = await dio.get(
         url,
-        queryParameters: {"user_id": userId},
+        queryParameters: {
+          "user_id": userId,
+          "search": search,
+        },
       );
 
       if (response.statusCode != 200) {

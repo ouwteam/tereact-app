@@ -3,8 +3,11 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:tereact/common/helper.dart';
 import 'package:tereact/entities/contact.dart';
+import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/tereact_provider.dart';
+import 'package:tereact/providers/user_provider.dart';
 import 'package:tereact/widgets/contact_item.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -24,15 +27,23 @@ class _MyHomePageState extends State<MyHomePage> {
   late List<Contact> listContacts;
   ScrollController scrollCtrl = ScrollController();
   late TereactProvider tp;
+  late UserProvider up;
   late Socket socket;
+  final txtSearch = TextEditingController();
+  late User user;
 
   @override
   void initState() {
     super.initState();
     listContacts = [];
     socket = widget.socket;
+
+    Helper.authChecker(context);
     tp = Provider.of<TereactProvider>(context, listen: false);
-    tp.getListContacts(userId: 1).then((values) {
+    up = Provider.of<UserProvider>(context, listen: false);
+    user = up.getUserData!;
+
+    tp.getListContacts(userId: user.id, search: txtSearch.text).then((values) {
       setState(() {
         listContacts.addAll(values);
       });
@@ -71,7 +82,9 @@ class _MyHomePageState extends State<MyHomePage> {
         body: RefreshIndicator(
           color: Colors.blue,
           onRefresh: () async {
-            tp.getListContacts(userId: 1).then((values) {
+            tp
+                .getListContacts(userId: user.id, search: txtSearch.text)
+                .then((values) {
               setState(() {
                 listContacts = values;
               });
@@ -100,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       Expanded(
                         child: TextFormField(
+                          controller: txtSearch,
                           cursorColor: Colors.grey,
                           decoration: const InputDecoration(
                             border: InputBorder.none,

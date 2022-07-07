@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/pages/home.dart';
+import 'package:tereact/pages/login_page.dart';
+import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
 
 class BlankPage extends StatefulWidget {
@@ -28,21 +30,30 @@ class _BlankPageState extends State<BlankPage> {
     super.initState();
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+    TereactProvider tp = Provider.of<TereactProvider>(context, listen: false);
+    tp.socket = widget.socket;
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       SharedPreferences.getInstance().then((prefs) {
         var userData = prefs.getString("user_data");
+        log("userData: $userData");
         if (userData != null) {
           var jsonUser = jsonDecode(userData);
           userProvider.setUserData = User.fromJson(jsonUser);
         }
 
+        FlutterNativeSplash.remove();
         if (userData == null) {
-          // TODO
-          // redirect to login page
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => const LoginPage(),
+            ),
+          );
+
+          return;
         }
 
-        FlutterNativeSplash.remove();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
