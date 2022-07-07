@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/common/helper.dart';
 import 'package:tereact/entities/contact.dart';
@@ -38,7 +41,6 @@ class _MyHomePageState extends State<MyHomePage> {
     listContacts = [];
     socket = widget.socket;
 
-    Helper.authChecker(context);
     tp = Provider.of<TereactProvider>(context, listen: false);
     up = Provider.of<UserProvider>(context, listen: false);
     user = up.getUserData!;
@@ -64,6 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Helper.authChecker(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notif) {
@@ -78,6 +86,18 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(
           elevation: 0,
           title: Text(widget.title),
+          actions: [
+            IconButton(
+              onPressed: () async {
+                var prefs = await SharedPreferences.getInstance();
+                await prefs.remove("user_data");
+                up.clearUserData();
+
+                Helper.authChecker(context);
+              },
+              icon: const Icon(Icons.power_outlined),
+            )
+          ],
         ),
         body: RefreshIndicator(
           color: Colors.blue,

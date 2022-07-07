@@ -27,6 +27,11 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearUserData() {
+    _user = null;
+    notifyListeners();
+  }
+
   Future<User?> handleLogin({
     required String username,
     required String password,
@@ -51,6 +56,7 @@ class UserProvider extends ChangeNotifier {
       }
 
       User user = User.fromJson(data['data']['user']);
+      setUserData = user;
       return user;
     } catch (e, stack) {
       log(e.toString());
