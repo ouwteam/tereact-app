@@ -96,13 +96,15 @@ class TereactProvider extends ChangeNotifier {
     try {
       Response response = await dio.post(
         url,
-        queryParameters: {
+        data: {
           "user_id": userId,
           "room_id": roomId,
           "message": strMessage,
         },
       );
 
+      log("response.data: ");
+      log(response.data.toString());
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to send message";
       }
@@ -112,8 +114,8 @@ class TereactProvider extends ChangeNotifier {
         throw data['message'] ?? "Undefined error message";
       }
 
-      RoomMessage message = RoomMessage.fromJson(data['data']['messages']);
-      User sender = User.fromJson(data['data']['messages']);
+      RoomMessage message = RoomMessage.fromJson(data['data']['message']);
+      User sender = User.fromJson(data['data']['sender']);
 
       message.sender = sender;
       return message;

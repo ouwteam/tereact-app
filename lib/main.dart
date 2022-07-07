@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/common/constant.dart';
+import 'package:tereact/pages/blankpage.dart';
 import 'package:tereact/pages/home.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/providers/tereact_provider.dart';
+import 'package:tereact/providers/user_provider.dart';
 
 void main() {
   Socket socket = io(
@@ -15,6 +18,9 @@ void main() {
           .setExtraHeaders({'foo': 'bar'}) // optional
           .build());
   socket.connect();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
   runApp(MyApp(socket: socket));
 }
 
@@ -37,6 +43,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => TereactProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => UserProvider(),
+        ),
       ],
       builder: (context, child) => MaterialApp(
         title: 'Tereact',
@@ -49,7 +58,7 @@ class MyApp extends StatelessWidget {
             onPrimary: Colors.black,
           ),
         ),
-        home: MyHomePage(title: 'Tereact', socket: socket),
+        home: BlankPage(socket: socket),
       ),
     );
   }

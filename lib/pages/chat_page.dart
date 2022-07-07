@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
@@ -33,6 +34,7 @@ class _ChatPageState extends State<ChatPage> {
   late TereactProvider tp;
   StreamController<List<RoomMessage>> streamMessage =
       StreamController<List<RoomMessage>>();
+  final TextEditingController txtMessage = TextEditingController();
 
   Stream<RoomMessage> handleSreamMessage(dynamic data) async* {
     log("masuk pak eko");
@@ -215,6 +217,8 @@ class _ChatPageState extends State<ChatPage> {
                   SizedBox(
                     width: MediaQuery.of(context).size.width * 0.78,
                     child: TextFormField(
+                      controller: txtMessage,
+                      keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: "Ketik sesuatu..",
@@ -222,10 +226,19 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ),
                   IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        Icons.send,
-                      ))
+                    onPressed: () {
+                      tp.sendMessageToRoom(
+                        userId: 1,
+                        roomId: widget.room.id,
+                        strMessage: txtMessage.text,
+                      );
+
+                      txtMessage.clear();
+                    },
+                    icon: const Icon(
+                      Icons.send,
+                    ),
+                  )
                 ],
               ),
             ),
