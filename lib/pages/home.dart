@@ -88,15 +88,16 @@ class _MyHomePageState extends State<MyHomePage> {
           title: Text(widget.title),
           actions: [
             IconButton(
-              onPressed: () async {
-                var prefs = await SharedPreferences.getInstance();
-                await prefs.remove("user_data");
-                up.clearUserData();
+              onPressed: () {
+                up.handleLogout().then((_) {
+                  Helper.authChecker(context);
+                });
 
-                Helper.authChecker(context);
+                var snackBar = const SnackBar(content: Text("Logout berhasil"));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
               },
               icon: const Icon(Icons.power_outlined),
-            )
+            ),
           ],
         ),
         body: RefreshIndicator(

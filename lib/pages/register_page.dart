@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/pages/home.dart';
-import 'package:tereact/pages/register_page.dart';
+import 'package:tereact/pages/login_page.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final txtUsername = TextEditingController();
   final txtPassword = TextEditingController();
 
@@ -24,12 +24,22 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 30),
-        alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Text(
+              "TEREACT",
+              style: TextStyle(fontSize: 24),
+            ),
+            const Text(
+              "we make sure everyone hear you",
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+              ),
+            ),
             Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
+              margin: const EdgeInsets.only(bottom: 10, top: 60),
               height: 50,
               padding: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
@@ -102,21 +112,21 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   );
                 },
-                child: const Text("Login"),
+                child: const Text("Register"),
               ),
             ),
             Row(
               children: [
-                const Text("Belum punya akun?"),
+                const Text("Sudah memiliki akun?"),
                 TextButton(
                   onPressed: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const RegisterPage(),
+                      builder: (context) => const LoginPage(),
                     ),
                   ),
                   child: const Text(
-                    "Mendaftar",
+                    "Masuk",
                     style: TextStyle(
                       color: Colors.blue,
                     ),
