@@ -1,46 +1,25 @@
-import 'package:tereact/entities/room_user.dart';
-
 class Room {
   Room({
     required this.id,
-    required this.title,
-    required this.description,
-    required this.roomType,
-    required this.createdAt,
-    required this.updatedAt,
+    required this.isGroup,
+    required this.groupName,
   });
+
   late final int id;
-  late final String title;
-  late final String description;
-  late final String roomType;
-  late final String createdAt;
-  late final String updatedAt;
-  late final List<RoomUser>? participants;
+  late final String isGroup;
+  late final String groupName;
 
   Room.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    title = json['title'];
-    description = json['description'];
-    roomType = json['room_type'];
-    createdAt = json['createdAt'];
-    updatedAt = json['updatedAt'];
-
-    if (json['participants'] != null) {
-      participants = (json['participants'] as Iterable)
-          .map((e) => RoomUser.fromJson(e))
-          .toList();
-    }
+    isGroup = json['is_group'];
+    groupName = json['group_name'];
   }
 
   Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['id'] = id;
-    data['title'] = title;
-    data['description'] = description;
-    data['room_type'] = roomType;
-    data['createdAt'] = createdAt;
-    data['updatedAt'] = updatedAt;
-    data['participants'] = participants?.map((e) => e.toJson()).toList();
-    return data;
+    return <String, dynamic>{
+      "id": id,
+      "is_group": isGroup,
+      "group_name": groupName,
+    };
   }
 }

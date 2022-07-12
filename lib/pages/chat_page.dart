@@ -70,7 +70,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void dispose() {
     Map<String, dynamic> payload = {"room_id": widget.room.id};
-    tp.socket.emit("unsubscribe_room", payload);
+    // tp.socket.emit("unsubscribe_room", payload);
     super.dispose();
   }
 
@@ -98,8 +98,8 @@ class _ChatPageState extends State<ChatPage> {
     });
 
     Map<String, dynamic> payload = {"room_id": widget.room.id};
-    tp.socket.emit("subscribe_room", payload);
-    tp.socket.on("message", handleIncomingMessage);
+    // tp.socket.emit("subscribe_room", payload);
+    // tp.socket.on("message", handleIncomingMessage);
   }
 
   @override
@@ -118,7 +118,7 @@ class _ChatPageState extends State<ChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.contact.alias ?? widget.contact.user.username,
+                    widget.contact.alias ?? widget.contact.user.name,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,

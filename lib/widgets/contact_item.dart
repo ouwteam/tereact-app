@@ -35,7 +35,7 @@ class ContactItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(contact.alias ?? contact.user.username),
+                      Text(contact.alias ?? contact.user.name),
                       const Spacer(),
                       Text(
                         contact.lastInteract != null

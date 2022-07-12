@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:tereact/common/constant.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/pages/home.dart';
 import 'package:tereact/pages/login_page.dart';
@@ -18,7 +19,7 @@ class BlankPage extends StatefulWidget {
     required this.socket,
   }) : super(key: key);
 
-  final Socket socket;
+  final Client socket;
 
   @override
   State<BlankPage> createState() => _BlankPageState();
@@ -35,7 +36,7 @@ class _BlankPageState extends State<BlankPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       SharedPreferences.getInstance().then((prefs) {
-        var userData = prefs.getString("user_data");
+        var userData = prefs.getString(spKeyUserData);
         log("userData: $userData");
         if (userData != null) {
           var jsonUser = jsonDecode(userData);

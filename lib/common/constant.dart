@@ -1,1 +1,3 @@
-const baseUrl = "http://10.78.81.145:3000";
+const baseUrl = "http://35.193.85.170:3000";
+const wsBaseUrl = "ws://35.193.85.170:8000";
+const spKeyUserData = "user_data";

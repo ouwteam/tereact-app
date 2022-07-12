@@ -1,23 +1,24 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/common/constant.dart';
 import 'package:tereact/pages/blankpage.dart';
-import 'package:tereact/pages/home.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
+import 'package:centrifuge/centrifuge.dart';
 
 void main() {
-  Socket socket = io(
-      baseUrl,
-      OptionBuilder()
-          .setTransports(['websocket']) // for Flutter or Dart VM
-          .disableAutoConnect() // disable auto-connection
-          .setExtraHeaders({'foo': 'bar'}) // optional
-          .build());
-  socket.connect();
+  final socket = createClient(wsBaseUrl);
+
+  socket.connect().then((_) {
+    log("connected");
+  }).onError((error, stackTrace) {
+    log(error.toString());
+  });
+
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
@@ -25,7 +26,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  final Socket socket;
+  final Client socket;
 
   const MyApp({
     Key? key,

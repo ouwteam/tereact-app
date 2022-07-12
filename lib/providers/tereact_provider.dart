@@ -1,7 +1,7 @@
 import 'dart:developer';
+import 'package:centrifuge/centrifuge.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/common/constant.dart';
 import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/room.dart';
@@ -15,7 +15,7 @@ class TereactProvider extends ChangeNotifier {
   final String sentToRoomUrl = "/messenger/send-to-room";
   final dio = Dio();
 
-  late Socket socket;
+  late Client socket;
 
   Future<List<RoomMessage>> getListMessages({
     required int roomId,

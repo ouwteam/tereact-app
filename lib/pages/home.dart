@@ -2,10 +2,9 @@
 
 import 'dart:developer';
 
+import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 import 'package:tereact/common/helper.dart';
 import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/user.dart';
@@ -20,7 +19,7 @@ class MyHomePage extends StatefulWidget {
     required this.socket,
   }) : super(key: key);
   final String title;
-  final Socket socket;
+  final Client socket;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -31,7 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ScrollController scrollCtrl = ScrollController();
   late TereactProvider tp;
   late UserProvider up;
-  late Socket socket;
+  late Client socket;
   final txtSearch = TextEditingController();
   late User user;
 
@@ -53,14 +52,14 @@ class _MyHomePageState extends State<MyHomePage> {
       log(error.toString());
     });
 
-    socket.onConnect((_) {
-      log('connect');
-    });
+    // socket.onConnect((_) {
+    //   log('connect');
+    // });
 
-    socket.onConnectError((d) {
-      log(d.toString());
-      log('connection failed');
-    });
+    // socket.onConnectError((d) {
+    //   log(d.toString());
+    //   log('connection failed');
+    // });
 
     tp.socket = socket;
   }

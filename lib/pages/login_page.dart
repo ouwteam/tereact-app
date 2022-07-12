@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tereact/entities/user.dart';
 import 'package:tereact/pages/home.dart';
 import 'package:tereact/pages/register_page.dart';
 import 'package:tereact/providers/tereact_provider.dart';
@@ -18,6 +17,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final txtUsername = TextEditingController();
   final txtPassword = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    txtUsername.text = "081";
+    txtPassword.text = "ihsan123";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,21 +74,11 @@ class _LoginPageState extends State<LoginPage> {
                   var up = Provider.of<UserProvider>(context, listen: false);
                   var tp = Provider.of<TereactProvider>(context, listen: false);
 
-                  User? user;
                   try {
-                    user = await up.handleLogin(
+                    await up.handleLogin(
                       username: txtUsername.text,
                       password: txtPassword.text,
                     );
-
-                    if (user == null) {
-                      var snackBar = const SnackBar(
-                        content: Text("Login failed"),
-                      );
-
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      return;
-                    }
                   } catch (e) {
                     var snackBar = SnackBar(
                       content: Text(e.toString()),
