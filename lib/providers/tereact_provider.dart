@@ -8,8 +8,8 @@ import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/user.dart';
 
 class TereactProvider extends ChangeNotifier {
-  final String listMessagesUrl = "/messenger/messages";
-  final String listContactsUrl = "/contact/list";
+  final String listMessagesUrl = "/chat";
+  final String listRoomUrl = "/room";
   final String createRoomUrl = "/room/create";
   final String sentToRoomUrl = "/messenger/send-to-room";
   final dio = Dio();
@@ -17,26 +17,31 @@ class TereactProvider extends ChangeNotifier {
   late Client socket;
 
   Future<List<RoomMessage>> getMessageFromRoom({
-    required int roomId,
-    required int userId,
+    required Room room,
+    required User user,
   }) async {
-    log("here..");
     try {
+      String url = baseUrl + listMessagesUrl;
+      log(url);
       Response response = await dio.get(
-        baseUrl + listMessagesUrl,
-        queryParameters: {"user_id": userId, "room_id": roomId},
+        url,
+        queryParameters: {"room_id": room.id},
+        options: Options(
+          headers: {"Authorization": "Bearer ${user.token}"},
+        ),
       );
 
+      log(response.data.toString());
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list message";
       }
 
       var data = response.data;
-      if (!data['ok']) {
+      if (!data['status']) {
         throw data['message'] ?? "Undefined error message";
       }
 
-      List<RoomMessage> messages = (data['data']['messages'] as Iterable)
+      List<RoomMessage> messages = (data['data']['chat'] as Iterable)
           .map((e) => RoomMessage.fromJson(e))
           .toList();
 
@@ -51,33 +56,40 @@ class TereactProvider extends ChangeNotifier {
   }
 
   Future<List<Room>> getRooms({
-    required int userId,
-    String? search,
+    required User user,
   }) async {
     try {
-      String url = baseUrl + listContactsUrl;
+      String url = baseUrl + listRoomUrl;
+      log(url);
       Response response = await dio.get(
         url,
-        queryParameters: {
-          "user_id": userId,
-          "search": search,
-        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer ${user.token}",
+          },
+        ),
       );
 
+      log(response.data.toString());
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list contacts";
       }
 
       var data = response.data;
-      if (!data['ok']) {
-        throw data['message'] ?? "Undefined error contacts";
+      if (!data['status']) {
+        throw data['message'] ?? "Undefined error get rooms";
       }
 
-      List<Room> contacts = (data['data']['rooms'] as Iterable)
+      List<Room> rooms = [];
+      if (data['data']['room'] == null) {
+        return rooms;
+      }
+
+      rooms = (data['data']['room'] as Iterable)
           .map((e) => Room.fromJson(e))
           .toList();
 
-      return contacts;
+      return rooms;
     } catch (e, stack) {
       log(e.toString());
       log("Here is the stack:");
@@ -88,11 +100,7 @@ class TereactProvider extends ChangeNotifier {
   }
 
   Future<Room> getRoom(int roomId) async {
-    return Room(
-      groupName: "",
-      id: 1,
-      isGroup: "test",
-    );
+    return Room(groupName: "", id: 1, isGroup: 2123, name: "", userId: 1212);
   }
 
   // Return nya adalah message yang
@@ -120,47 +128,12 @@ class TereactProvider extends ChangeNotifier {
       }
 
       var data = response.data;
-      if (!data['ok']) {
+      if (!data['status']) {
         throw data['message'] ?? "Undefined error message";
       }
 
-      RoomMessage message = RoomMessage.fromJson(data['data']['message']);
-      User sender = User.fromJson(data['data']['sender']);
-
-      message.sender = sender;
+      RoomMessage message = RoomMessage.fromJson(data['data']['chat']);
       return message;
-    } catch (e, stack) {
-      log(e.toString());
-      log("Here is the stack:");
-      log(stack.toString());
-    }
-
-    return null;
-  }
-
-  Future<Room?> createRoomPrivate({
-    required int userId,
-    required int guestId,
-  }) async {
-    try {
-      Map<String, dynamic> body = {
-        "title": "",
-        "description": "",
-        "room_type": "PRIVATE",
-        "user_ids": [userId, guestId]
-      };
-      Response response = await dio.post(baseUrl + createRoomUrl, data: body);
-      if (response.statusCode != 200) {
-        throw response.statusMessage ?? "Failed to create room";
-      }
-
-      var data = response.data;
-      if (!data['ok']) {
-        throw data['message'] ?? "Undefined error";
-      }
-
-      Room room = Room.fromJson(data['data']['room']);
-      return room;
     } catch (e, stack) {
       log(e.toString());
       log("Here is the stack:");

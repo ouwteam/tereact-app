@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/pages/chat_page.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/widgets/circle_avatar_with_indicator.dart';
 
-class ContactItem extends StatelessWidget {
-  const ContactItem({
+class RoomItem extends StatelessWidget {
+  const RoomItem({
     Key? key,
     required this.room,
   }) : super(key: key);
@@ -34,7 +33,7 @@ class ContactItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(room.groupName),
+                      Text(room.isGroup == 0 ? room.name : room.groupName),
                       const Spacer(),
                       const Text(
                         "20:00",
@@ -61,31 +60,12 @@ class ContactItem extends StatelessWidget {
         ),
       ),
       onTap: () {
-        TereactProvider tp =
-            Provider.of<TereactProvider>(context, listen: false);
-        tp.createRoomPrivate(userId: 1, guestId: room.id).then((room) {
-          if (room == null) {
-            const snackBar = SnackBar(
-              content: Text('Failed to create room'),
-            );
-
-            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            return;
-          }
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(room: room),
-            ),
-          );
-        }).onError((error, stackTrace) {
-          var snackBar = SnackBar(
-            content: Text(error.toString()),
-          );
-
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(room: room),
+          ),
+        );
       },
     );
   }

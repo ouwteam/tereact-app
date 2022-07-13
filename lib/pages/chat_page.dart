@@ -80,14 +80,12 @@ class _ChatPageState extends State<ChatPage> {
     listMessages = [];
     user = up.getUserData!;
 
-    tp
-        .getMessageFromRoom(roomId: widget.room.id, userId: user.id!)
-        .then((values) {
+    tp.getMessageFromRoom(room: widget.room, user: user).then((values) {
       setState(() {
         listMessages.addAll(values
           ..sort(
             (m1, m2) {
-              return m1.createdAt.compareTo(m2.createdAt);
+              return m1.createdAt!.compareTo(m2.createdAt!);
             },
           ));
 
@@ -97,7 +95,7 @@ class _ChatPageState extends State<ChatPage> {
       log(err.toString());
     });
 
-    Map<String, dynamic> payload = {"room_id": widget.room.id};
+    // Map<String, dynamic> payload = {"room_id": widget.room.id};
     // tp.socket.emit("subscribe_room", payload);
     // tp.socket.on("message", handleIncomingMessage);
   }
@@ -124,7 +122,9 @@ class _ChatPageState extends State<ChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.room.groupName,
+                    widget.room.isGroup == 0
+                        ? widget.room.name
+                        : widget.room.groupName,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
@@ -169,9 +169,9 @@ class _ChatPageState extends State<ChatPage> {
                       elements: mesageItems,
                       groupBy: (message) {
                         return DateTime(
-                          message.createdAt.year,
-                          message.createdAt.month,
-                          message.createdAt.day,
+                          message.createdAt!.year,
+                          message.createdAt!.month,
+                          message.createdAt!.day,
                         );
                       },
                       groupSeparatorBuilder: (message) =>

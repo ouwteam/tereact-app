@@ -18,7 +18,7 @@ class GroupSparator extends StatelessWidget {
       child: Align(
         alignment: Alignment.center,
         child: Text(
-          DateFormat.yMMMd().format(message.createdAt),
+          DateFormat.yMMMd().format(message.createdAt!),
           textAlign: TextAlign.center,
           style: const TextStyle(
             fontSize: 10,

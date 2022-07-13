@@ -29,10 +29,10 @@ class ChatBubble extends StatelessWidget {
           crossAxisAlignment:
               isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            Text(message.messageText),
+            Text(message.value),
             const SizedBox(height: 5),
             Text(
-              DateFormat.Hm().format(message.createdAt),
+              DateFormat.Hm().format(message.createdAt!),
               style: const TextStyle(fontSize: 9),
             ),
           ],

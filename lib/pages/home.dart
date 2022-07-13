@@ -10,7 +10,7 @@ import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
-import 'package:tereact/widgets/contact_item.dart';
+import 'package:tereact/widgets/room_item.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     up = Provider.of<UserProvider>(context, listen: false);
     user = up.getUserData!;
 
-    tp.getRooms(userId: user.id!, search: txtSearch.text).then((values) {
+    tp.getRooms(user: user).then((values) {
       setState(() {
         listRooms.addAll(values);
       });
@@ -101,9 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: RefreshIndicator(
           color: Colors.blue,
           onRefresh: () async {
-            tp
-                .getRooms(userId: user.id!, search: txtSearch.text)
-                .then((values) {
+            tp.getRooms(user: user).then((values) {
               setState(() {
                 listRooms = values;
               });
@@ -156,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemCount: listRooms.length,
                     itemBuilder: (context, i) {
                       Room contact = listRooms[i];
-                      return ContactItem(room: contact);
+                      return RoomItem(room: contact);
                     },
                   ),
                 ),
