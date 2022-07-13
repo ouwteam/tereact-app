@@ -29,12 +29,12 @@ class _BlankPageState extends State<BlankPage> {
   @override
   void initState() {
     super.initState();
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    TereactProvider tp = Provider.of<TereactProvider>(context, listen: false);
-    tp.socket = widget.socket;
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+      TereactProvider tp = Provider.of<TereactProvider>(context, listen: false);
+      tp.socket = widget.socket;
+
       SharedPreferences.getInstance().then((prefs) {
         var userData = prefs.getString(spKeyUserData);
         log("userData: $userData");
@@ -55,6 +55,43 @@ class _BlankPageState extends State<BlankPage> {
           return;
         }
 
+        final User user = userProvider.getUserData!;
+        log("user.token: ${user.token}");
+        tp.socket.setToken(user.token!);
+
+        tp.socket.connectStream.listen((event) {
+          log("socket.connectStream:");
+          log(event.toString());
+        });
+
+        tp.socket.disconnectStream.listen((event) {
+          log("socket.disconnectStream:");
+          log(event.toString());
+        });
+
+        // final subs = tp.socket.getSubscription("chat:1");
+        // subs.joinStream.listen((evt) {
+        //   log(evt.toString());
+        // });
+
+        // subs.subscribeSuccessStream.listen((evt) {
+        //   log(evt.toString());
+        // });
+
+        // subs.subscribeErrorStream.listen((evt) {
+        //   log(evt.toString());
+        // });
+
+        // subs.unsubscribeStream.listen((evt) {
+        //   log(evt.toString());
+        // });
+
+        // subs.publishStream.listen((evt) {
+        //   log(evt.toString());
+        // });
+        // subs.subscribe();
+
+        tp.socket.connect();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

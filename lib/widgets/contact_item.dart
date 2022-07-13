@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/pages/chat_page.dart';
 import 'package:tereact/providers/tereact_provider.dart';
@@ -10,10 +9,10 @@ import 'package:tereact/widgets/circle_avatar_with_indicator.dart';
 class ContactItem extends StatelessWidget {
   const ContactItem({
     Key? key,
-    required this.contact,
+    required this.room,
   }) : super(key: key);
 
-  final Contact contact;
+  final Room room;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +34,11 @@ class ContactItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(contact.alias ?? contact.user.name),
+                      Text(room.groupName),
                       const Spacer(),
-                      Text(
-                        contact.lastInteract != null
-                            ? DateFormat.Hm().format(contact.lastInteract!)
-                            : DateFormat.Hm().format(contact.updatedAt),
-                        style: const TextStyle(
+                      const Text(
+                        "20:00",
+                        style: TextStyle(
                           color: Colors.grey,
                           fontSize: 11,
                         ),
@@ -49,10 +46,10 @@ class ContactItem extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  Text(
-                    contact.snapshot ?? "",
+                  const Text(
+                    "Lorem ipsum dolor sit amet",
                     maxLines: 1,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.grey,
                       fontSize: 11,
                     ),
@@ -66,7 +63,7 @@ class ContactItem extends StatelessWidget {
       onTap: () {
         TereactProvider tp =
             Provider.of<TereactProvider>(context, listen: false);
-        tp.createRoomPrivate(userId: 1, guestId: contact.guestId).then((room) {
+        tp.createRoomPrivate(userId: 1, guestId: room.id).then((room) {
           if (room == null) {
             const snackBar = SnackBar(
               content: Text('Failed to create room'),
@@ -79,7 +76,7 @@ class ContactItem extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChatPage(contact: contact, room: room),
+              builder: (context) => ChatPage(room: room),
             ),
           );
         }).onError((error, stackTrace) {

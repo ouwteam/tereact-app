@@ -1,4 +1,3 @@
-import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/user.dart';
 
 class Contact {

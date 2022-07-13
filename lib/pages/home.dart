@@ -6,7 +6,7 @@ import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/common/helper.dart';
-import 'package:tereact/entities/contact.dart';
+import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
@@ -26,42 +26,41 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late List<Contact> listContacts;
+  late List<Room> listRooms;
   ScrollController scrollCtrl = ScrollController();
   late TereactProvider tp;
   late UserProvider up;
   late Client socket;
   final txtSearch = TextEditingController();
   late User user;
+  late Subscription subs;
 
   @override
   void initState() {
     super.initState();
-    listContacts = [];
+    listRooms = [];
     socket = widget.socket;
 
     tp = Provider.of<TereactProvider>(context, listen: false);
     up = Provider.of<UserProvider>(context, listen: false);
     user = up.getUserData!;
 
-    tp.getListContacts(userId: user.id, search: txtSearch.text).then((values) {
+    tp.getRooms(userId: user.id!, search: txtSearch.text).then((values) {
       setState(() {
-        listContacts.addAll(values);
+        listRooms.addAll(values);
       });
     }).onError((error, stackTrace) {
       log(error.toString());
     });
 
-    // socket.onConnect((_) {
-    //   log('connect');
-    // });
+    final subs = tp.socket.getSubscription("rooms:${user.id}");
+    subs.subscribe();
+  }
 
-    // socket.onConnectError((d) {
-    //   log(d.toString());
-    //   log('connection failed');
-    // });
-
-    tp.socket = socket;
+  @override
+  void dispose() {
+    super.dispose();
+    subs.unsubscribe();
   }
 
   @override
@@ -103,10 +102,10 @@ class _MyHomePageState extends State<MyHomePage> {
           color: Colors.blue,
           onRefresh: () async {
             tp
-                .getListContacts(userId: user.id, search: txtSearch.text)
+                .getRooms(userId: user.id!, search: txtSearch.text)
                 .then((values) {
               setState(() {
-                listContacts = values;
+                listRooms = values;
               });
             }).onError((error, stackTrace) {
               log(error.toString());
@@ -154,10 +153,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     controller: scrollCtrl,
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: listContacts.length,
+                    itemCount: listRooms.length,
                     itemBuilder: (context, i) {
-                      Contact contact = listContacts[i];
-                      return ContactItem(contact: contact);
+                      Room contact = listRooms[i];
+                      return ContactItem(room: contact);
                     },
                   ),
                 ),

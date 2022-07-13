@@ -12,13 +12,6 @@ import 'package:centrifuge/centrifuge.dart';
 
 void main() {
   final socket = createClient(wsBaseUrl);
-
-  socket.connect().then((_) {
-    log("connected");
-  }).onError((error, stackTrace) {
-    log(error.toString());
-  });
-
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 

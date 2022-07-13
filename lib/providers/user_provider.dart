@@ -87,14 +87,20 @@ class UserProvider extends ChangeNotifier {
 
   Future<User?> handleRegister(User user) async {
     try {
-      String url = baseUrl + loginUrl;
+      String url = baseUrl + registerUrl;
       Response response = await dio.post(
         url,
         data: user.toJson(),
       );
 
+      log("response.statusCode: ${response.statusCode}");
+      log(response.data.toString());
+      if (response.statusCode == 400) {
+        throw response.data['message'] ?? "Login failed";
+      }
+
       if (response.statusCode != 200) {
-        throw response.statusMessage ?? "Failed to get list contacts";
+        throw "Login failed (${response.statusCode})";
       }
 
       var data = response.data;
@@ -102,7 +108,9 @@ class UserProvider extends ChangeNotifier {
         throw data['message'] ?? "Undefined error contacts";
       }
 
+      String token = data['data']['token'] as String;
       User userData = User.fromJson(data['data']['user']);
+      userData.token = token;
       setUserData = userData;
 
       var prefs = await SharedPreferences.getInstance();
@@ -113,9 +121,8 @@ class UserProvider extends ChangeNotifier {
       log("Here is the stack:");
       log(stack.toString());
       setErrorMessage = e.toString();
+      throw getErrorMessage;
     }
-
-    return null;
   }
 
   Future<bool> handleLogout() async {

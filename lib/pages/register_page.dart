@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/entities/user.dart';
-import 'package:tereact/pages/home.dart';
+import 'package:tereact/pages/blankpage.dart';
 import 'package:tereact/pages/login_page.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
@@ -22,6 +22,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
@@ -78,21 +79,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   var up = Provider.of<UserProvider>(context, listen: false);
                   var tp = Provider.of<TereactProvider>(context, listen: false);
 
-                  User? user;
                   try {
-                    user = await up.handleLogin(
-                      username: txtUsername.text,
+                    User user = User(
+                      email: txtUsername.text,
                       password: txtPassword.text,
+                      name: txtUsername.text,
+                      phoneNumber: txtUsername.text,
                     );
 
-                    if (user == null) {
-                      var snackBar = const SnackBar(
-                        content: Text("Login failed"),
-                      );
-
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      return;
-                    }
+                    await up.handleRegister(user);
                   } catch (e) {
                     var snackBar = SnackBar(
                       content: Text(e.toString()),
@@ -105,8 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => MyHomePage(
-                        title: "TEREACT",
+                      builder: (BuildContext context) => BlankPage(
                         socket: tp.socket,
                       ),
                     ),

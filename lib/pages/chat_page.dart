@@ -4,8 +4,8 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
+import 'package:tereact/common/helper.dart';
 import 'package:tereact/components/chat_bubble.dart';
-import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/user.dart';
@@ -17,11 +17,9 @@ import 'package:tereact/widgets/group_sparator.dart';
 class ChatPage extends StatefulWidget {
   const ChatPage({
     Key? key,
-    required this.contact,
     required this.room,
   }) : super(key: key);
 
-  final Contact contact;
   final Room room;
 
   @override
@@ -82,7 +80,9 @@ class _ChatPageState extends State<ChatPage> {
     listMessages = [];
     user = up.getUserData!;
 
-    tp.getListMessages(roomId: widget.room.id, userId: user.id).then((values) {
+    tp
+        .getMessageFromRoom(roomId: widget.room.id, userId: user.id!)
+        .then((values) {
       setState(() {
         listMessages.addAll(values
           ..sort(
@@ -103,6 +103,12 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Helper.authChecker(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -118,7 +124,7 @@ class _ChatPageState extends State<ChatPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.contact.alias ?? widget.contact.user.name,
+                    widget.room.groupName,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
@@ -218,7 +224,7 @@ class _ChatPageState extends State<ChatPage> {
                   IconButton(
                     onPressed: () {
                       tp.sendMessageToRoom(
-                        userId: user.id,
+                        userId: user.id!,
                         roomId: widget.room.id,
                         strMessage: txtMessage.text,
                       );

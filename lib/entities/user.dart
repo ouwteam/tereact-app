@@ -1,13 +1,13 @@
 class User {
   User({
-    required this.id,
+    this.id,
     required this.email,
     required this.name,
     required this.phoneNumber,
     this.token,
     this.password,
   });
-  late final int id;
+  int? id;
   late final String email;
   late final String name;
   late final String phoneNumber;

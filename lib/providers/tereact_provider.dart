@@ -3,7 +3,6 @@ import 'package:centrifuge/centrifuge.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:tereact/common/constant.dart';
-import 'package:tereact/entities/contact.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/user.dart';
@@ -17,7 +16,7 @@ class TereactProvider extends ChangeNotifier {
 
   late Client socket;
 
-  Future<List<RoomMessage>> getListMessages({
+  Future<List<RoomMessage>> getMessageFromRoom({
     required int roomId,
     required int userId,
   }) async {
@@ -51,7 +50,7 @@ class TereactProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<List<Contact>> getListContacts({
+  Future<List<Room>> getRooms({
     required int userId,
     String? search,
   }) async {
@@ -74,8 +73,8 @@ class TereactProvider extends ChangeNotifier {
         throw data['message'] ?? "Undefined error contacts";
       }
 
-      List<Contact> contacts = (data['data']['contacts'] as Iterable)
-          .map((e) => Contact.fromJson(e))
+      List<Room> contacts = (data['data']['rooms'] as Iterable)
+          .map((e) => Room.fromJson(e))
           .toList();
 
       return contacts;
@@ -86,6 +85,14 @@ class TereactProvider extends ChangeNotifier {
     }
 
     return [];
+  }
+
+  Future<Room> getRoom(int roomId) async {
+    return Room(
+      groupName: "",
+      id: 1,
+      isGroup: "test",
+    );
   }
 
   // Return nya adalah message yang
