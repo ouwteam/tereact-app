@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/pages/chat_page.dart';
-import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/widgets/circle_avatar_with_indicator.dart';
 
 class RoomItem extends StatelessWidget {
@@ -35,9 +34,11 @@ class RoomItem extends StatelessWidget {
                     children: [
                       Text(room.isGroup == 0 ? room.name : room.groupName),
                       const Spacer(),
-                      const Text(
-                        "20:00",
-                        style: TextStyle(
+                      Text(
+                        room.timeSent != null
+                            ? DateFormat.Hm().format(room.timeSent!)
+                            : "",
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 11,
                         ),
@@ -45,10 +46,10 @@ class RoomItem extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 5),
-                  const Text(
-                    "Lorem ipsum dolor sit amet",
+                  Text(
+                    room.value,
                     maxLines: 1,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 11,
                     ),

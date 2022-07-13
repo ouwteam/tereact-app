@@ -99,8 +99,8 @@ class TereactProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<Room> getRoom(int roomId) async {
-    return Room(groupName: "", id: 1, isGroup: 2123, name: "", userId: 1212);
+  Future<Room?> getRoom(int roomId) async {
+    return null;
   }
 
   // Return nya adalah message yang

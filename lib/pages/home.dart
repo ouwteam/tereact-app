@@ -45,14 +45,6 @@ class _MyHomePageState extends State<MyHomePage> {
     up = Provider.of<UserProvider>(context, listen: false);
     user = up.getUserData!;
 
-    tp.getRooms(user: user).then((values) {
-      setState(() {
-        listRooms.addAll(values);
-      });
-    }).onError((error, stackTrace) {
-      log(error.toString());
-    });
-
     final subs = tp.socket.getSubscription("rooms:${user.id}");
     subs.subscribe();
   }
@@ -108,6 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
             }).onError((error, stackTrace) {
               log(error.toString());
             });
+
             return;
           },
           child: SingleChildScrollView(
@@ -147,14 +140,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 Container(
                   margin: const EdgeInsets.all(12),
-                  child: ListView.builder(
-                    controller: scrollCtrl,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: listRooms.length,
-                    itemBuilder: (context, i) {
-                      Room contact = listRooms[i];
-                      return RoomItem(room: contact);
+                  child: FutureBuilder(
+                    future: tp.getRooms(user: user),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        listRooms = snapshot.data as List<Room>;
+                        if (listRooms.isNotEmpty) {
+                          return ListView.builder(
+                            controller: scrollCtrl,
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: listRooms.length,
+                            itemBuilder: (context, i) {
+                              Room contact = listRooms[i];
+                              return RoomItem(room: contact);
+                            },
+                          );
+                        }
+
+                        if (listRooms.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              "Tidak ada data",
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          );
+                        }
+                      }
+
+                      return const Center(
+                        child: SizedBox(
+                          height: 24,
+                          width: 24,
+                          child: CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        ),
+                      );
                     },
                   ),
                 ),
