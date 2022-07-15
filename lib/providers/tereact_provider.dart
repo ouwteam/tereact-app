@@ -11,8 +11,14 @@ class TereactProvider extends ChangeNotifier {
   final String listMessagesUrl = "/chat";
   final String listRoomUrl = "/room";
   final String createRoomUrl = "/room/create";
-  final String sentToRoomUrl = "/messenger/send-to-room";
-  final dio = Dio();
+  final String sentToRoomUrl = "/chat";
+  final dio = Dio(BaseOptions(
+    connectTimeout: 9000,
+    receiveDataWhenStatusError: true,
+    validateStatus: (status) {
+      return (status ?? 0) < 500;
+    },
+  ));
 
   late Client socket;
 
@@ -31,6 +37,7 @@ class TereactProvider extends ChangeNotifier {
         ),
       );
 
+      log("response.data");
       log(response.data.toString());
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list message";
@@ -106,19 +113,29 @@ class TereactProvider extends ChangeNotifier {
   // Return nya adalah message yang
   // barusan di input
   Future<RoomMessage?> sendMessageToRoom({
-    required int userId,
+    required User user,
     required int roomId,
     required String strMessage,
   }) async {
     var url = baseUrl + sentToRoomUrl;
     try {
+      var payload = {
+        "room_id": roomId,
+        "type": 1,
+        "is_reply": 0,
+        "reply_chat_id": 0,
+        "value": strMessage
+      };
+      log(url);
+      log(payload.toString());
       Response response = await dio.post(
         url,
-        data: {
-          "user_id": userId,
-          "room_id": roomId,
-          "message": strMessage,
-        },
+        data: payload,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer ${user.token}",
+          },
+        ),
       );
 
       log("response.data: ");

@@ -32,11 +32,12 @@ class RoomItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(room.isGroup == 0 ? room.name : room.groupName),
+                      const Text("Undefined Chat"),
                       const Spacer(),
                       Text(
-                        room.timeSent != null
-                            ? DateFormat.Hm().format(room.timeSent!)
+                        room.getLastChat() != null
+                            ? DateFormat.Hm()
+                                .format(room.getLastChat()!.createdAt!)
                             : "",
                         style: const TextStyle(
                           color: Colors.grey,
@@ -47,7 +48,7 @@ class RoomItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    room.value,
+                    room.getLastChat() != null ? room.getLastChat()!.value : "",
                     maxLines: 1,
                     style: const TextStyle(
                       color: Colors.grey,

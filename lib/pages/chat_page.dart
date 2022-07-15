@@ -120,18 +120,16 @@ class _ChatPageState extends State<ChatPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                children: const [
                   Text(
-                    widget.room.isGroup == 0
-                        ? widget.room.name
-                        : widget.room.groupName,
-                    style: const TextStyle(
+                    "Undefined Chat",
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  const Text(
+                  SizedBox(height: 5),
+                  Text(
                     "Online",
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
@@ -224,7 +222,7 @@ class _ChatPageState extends State<ChatPage> {
                   IconButton(
                     onPressed: () {
                       tp.sendMessageToRoom(
-                        userId: user.id!,
+                        user: user,
                         roomId: widget.room.id,
                         strMessage: txtMessage.text,
                       );
