@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:centrifuge/centrifuge.dart';
@@ -26,6 +28,7 @@ class _PageObrolanState extends State<PageObrolan> {
   late List<Room> listRooms;
   late Subscription subs;
   final txtSearch = TextEditingController();
+  late StreamSubscription<String> roomsListener;
   final ScrollController scrollCtrl = ScrollController();
 
   int page = 1;
@@ -40,11 +43,24 @@ class _PageObrolanState extends State<PageObrolan> {
     user = up.getUserData!;
 
     subs = tp.socket.getSubscription("rooms:${user.id}");
+    roomsListener = subs.publishStream
+        .map<String>((e) => utf8.decode(e.data))
+        .listen((event) {
+      tp.getRooms(user: user, page: page, search: search).then((values) {
+        setState(() {
+          listRooms = values;
+        });
+      }).onError((error, stackTrace) {
+        log(error.toString());
+      });
+    });
+
     subs.subscribe();
   }
 
   @override
   void dispose() {
+    roomsListener.cancel();
     subs.unsubscribe();
     super.dispose();
   }

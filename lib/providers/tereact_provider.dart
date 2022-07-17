@@ -30,6 +30,8 @@ class TereactProvider extends ChangeNotifier {
     try {
       String url = baseUrl + listMessagesUrl;
       log(url);
+      log({"room_id": room.id}.toString());
+      log("user.token: ${user.token}");
       Response response = await dio.get(
         url,
         queryParameters: {"room_id": room.id},
@@ -38,8 +40,6 @@ class TereactProvider extends ChangeNotifier {
         ),
       );
 
-      log("response.data");
-      log(response.data.toString());
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list message";
       }
