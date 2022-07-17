@@ -65,12 +65,24 @@ class TereactProvider extends ChangeNotifier {
 
   Future<List<Room>> getRooms({
     required User user,
+    int page = 1,
+    String search = "",
   }) async {
     try {
       String url = baseUrl + listRoomUrl;
       log(url);
+      log({
+        "queryParameters": {
+          "page": page,
+          "query": search,
+        }
+      }.toString());
       Response response = await dio.get(
         url,
+        queryParameters: {
+          "page": page,
+          "query": search,
+        },
         options: Options(
           headers: {
             "Authorization": "Bearer ${user.token}",

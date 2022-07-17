@@ -6,11 +6,13 @@ import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/common/helper.dart';
+import 'package:tereact/components/room_item_card.dart';
 import 'package:tereact/entities/room.dart';
+import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
-import 'package:tereact/widgets/room_item.dart';
+import 'package:tereact/components/room_item.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -34,6 +36,9 @@ class _MyHomePageState extends State<MyHomePage> {
   final txtSearch = TextEditingController();
   late User user;
   late Subscription subs;
+
+  int page = 1;
+  String search = "";
 
   @override
   void initState() {
@@ -66,7 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return NotificationListener<ScrollNotification>(
       onNotification: (notif) {
         if (notif.metrics.atEdge && notif.metrics.pixels > 0) {
-          log("loadmore..");
+          setState(() {
+            page = page + 1;
+          });
         }
 
         return true;
@@ -93,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: RefreshIndicator(
           color: Colors.blue,
           onRefresh: () async {
-            tp.getRooms(user: user).then((values) {
+            tp.getRooms(user: user, page: page, search: search).then((values) {
               setState(() {
                 listRooms = values;
               });
@@ -125,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: TextFormField(
                           controller: txtSearch,
                           cursorColor: Colors.grey,
+                          onChanged: (value) => search = txtSearch.text,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             fillColor: Colors.grey,
@@ -141,31 +149,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   margin: const EdgeInsets.all(12),
                   child: FutureBuilder(
-                    future: tp.getRooms(user: user),
+                    future: tp.getRooms(
+                      user: user,
+                      page: page,
+                      search: search,
+                    ),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         listRooms = snapshot.data as List<Room>;
-                        if (listRooms.isNotEmpty) {
-                          return ListView.builder(
-                            controller: scrollCtrl,
-                            physics: const NeverScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: listRooms.length,
-                            itemBuilder: (context, i) {
-                              Room contact = listRooms[i];
-                              return RoomItem(room: contact);
-                            },
-                          );
-                        }
-
-                        if (listRooms.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              "Tidak ada data",
-                              style: TextStyle(color: Colors.grey),
-                            ),
-                          );
-                        }
+                        return RoomItemCard(
+                          scrollCtrl: scrollCtrl,
+                          listRooms: listRooms,
+                        );
                       }
 
                       return const Center(
