@@ -41,8 +41,14 @@ class _ChatPageState extends State<ChatPage> {
   late Subscription chatSubscription;
 
   bool visibleGotoBottom = false;
+  late StreamSubscription<String> chatListener;
 
   void handleStreamMessage(String strJson) {
+    log("handleStreamMessage hit");
+    if (!mounted) {
+      return;
+    }
+
     final d = json.decode(strJson) as Map<String, dynamic>;
     if (d['chat'] == null) {
       const snackbar = SnackBar(content: Text("Failed to listen to new chat"));
@@ -88,8 +94,9 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    chatSubscription.unsubscribe();
     super.dispose();
+    chatListener.cancel();
+    chatSubscription.unsubscribe();
   }
 
   @override
@@ -102,7 +109,7 @@ class _ChatPageState extends State<ChatPage> {
 
     firstLoadMessage(user);
     chatSubscription = tp.socket.getSubscription("room:${widget.room.id}");
-    chatSubscription.publishStream
+    chatListener = chatSubscription.publishStream
         .map<String>((e) => utf8.decode(e.data))
         .listen(handleStreamMessage);
 

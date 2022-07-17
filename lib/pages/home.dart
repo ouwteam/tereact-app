@@ -2,12 +2,7 @@
 
 import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tereact/common/helper.dart';
-import 'package:tereact/entities/room.dart';
-import 'package:tereact/entities/user.dart';
-import 'package:tereact/providers/tereact_provider.dart';
-import 'package:tereact/providers/user_provider.dart';
 import 'package:tereact/widgets/obrolan.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -24,11 +19,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late TereactProvider tp;
-  late UserProvider up;
   late Client socket;
-  late User user;
-  late Subscription subs;
 
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -40,12 +31,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     socket = widget.socket;
 
-    tp = Provider.of<TereactProvider>(context, listen: false);
-    up = Provider.of<UserProvider>(context, listen: false);
-    user = up.getUserData!;
-
     _widgetOptions = [
-      PageObrolan(user: user),
+      const PageObrolan(),
       const Text(
         'Kontak',
         style: optionStyle,
@@ -59,15 +46,6 @@ class _MyHomePageState extends State<MyHomePage> {
         style: optionStyle,
       ),
     ];
-
-    final subs = tp.socket.getSubscription("rooms:${user.id}");
-    subs.subscribe();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    subs.unsubscribe();
   }
 
   @override
@@ -80,23 +58,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        elevation: 0,
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            onPressed: () {
-              up.handleLogout().then((_) {
-                Helper.authChecker(context);
-              });
-
-              var snackBar = const SnackBar(content: Text("Logout berhasil"));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            },
-            icon: const Icon(Icons.power_outlined),
-          ),
-        ],
-      ),
       bottomNavigationBar: BottomNavigationBar(
         showSelectedLabels: true,
         showUnselectedLabels: true,
@@ -122,13 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.black,
         onTap: _onItemTapped,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton(
-        elevation: 0,
-        onPressed: () {},
-        backgroundColor: Colors.blue,
-        child: const Icon(Icons.add),
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
     );

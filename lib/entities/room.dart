@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/room_user.dart';
 
