@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sticky_grouped_list/sticky_grouped_list.dart';
@@ -36,6 +37,7 @@ class _ChatPageState extends State<ChatPage> {
       StreamController<List<RoomMessage>>();
   final TextEditingController txtMessage = TextEditingController();
   late User user;
+  late Subscription chatSubscription;
 
   Stream<RoomMessage> handleSreamMessage(dynamic data) async* {
     log("masuk pak eko");
@@ -67,8 +69,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
-    Map<String, dynamic> payload = {"room_id": widget.room.id};
-    // tp.socket.emit("unsubscribe_room", payload);
+    chatSubscription.unsubscribe();
     super.dispose();
   }
 
@@ -95,6 +96,8 @@ class _ChatPageState extends State<ChatPage> {
       log(err.toString());
     });
 
+    chatSubscription = tp.socket.getSubscription("room:${widget.room.id}");
+    chatSubscription.subscribe();
     // Map<String, dynamic> payload = {"room_id": widget.room.id};
     // tp.socket.emit("subscribe_room", payload);
     // tp.socket.on("message", handleIncomingMessage);
