@@ -1,3 +1,5 @@
+import 'package:tereact/entities/user.dart';
+
 class RoomMessage {
   RoomMessage({
     required this.id,
@@ -8,10 +10,13 @@ class RoomMessage {
     required this.status,
     required this.isReply,
     required this.replyChatId,
+    required this.content,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
+    required this.sender,
   });
+
   late final int id;
   late final int roomId;
   late final int userId;
@@ -20,9 +25,11 @@ class RoomMessage {
   late final int status;
   late final int isReply;
   late final int replyChatId;
+  late final String content;
   late final DateTime? createdAt;
   late final DateTime? updatedAt;
   late final DateTime? deletedAt;
+  late final User sender;
 
   RoomMessage.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -33,9 +40,14 @@ class RoomMessage {
     status = json['status'];
     isReply = json['is_reply'];
     replyChatId = json['reply_chat_id'];
+    content = json['content'];
     createdAt = DateTime.tryParse(json['created_at']);
     updatedAt = DateTime.tryParse(json['updated_at']);
     deletedAt = DateTime.tryParse(json['deleted_at']);
+
+    if (json['user'] != null) {
+      sender = User.fromJson(json['user']);
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -48,9 +60,12 @@ class RoomMessage {
     data['status'] = status;
     data['is_reply'] = isReply;
     data['reply_chat_id'] = replyChatId;
+    data['content'] = content;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;
     data['deleted_at'] = deletedAt;
+    data['user'] = sender.toJson();
+
     return data;
   }
 }

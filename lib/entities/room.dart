@@ -1,32 +1,28 @@
+import 'package:tereact/entities/room_message.dart';
+
 class Room {
   Room({
     required this.id,
     required this.isGroup,
     required this.groupName,
-    required this.userId,
-    required this.name,
-    required this.value,
-    required this.senderName,
-    required this.timeSent,
+    required this.chats,
   });
+
   late final int id;
   late final int isGroup;
   late final String groupName;
-  late final int userId;
-  late final String name;
-  late final String value;
-  late final String senderName;
-  late final DateTime? timeSent;
+  late final List<RoomMessage> chats;
 
   Room.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     isGroup = json['is_group'];
     groupName = json['group_name'];
-    userId = json['user_id'];
-    name = json['name'];
-    value = json['value'];
-    senderName = json['sender_name'];
-    timeSent = DateTime.tryParse(json['time_sent']);
+
+    if (json['chat'] != null) {
+      chats = (json['chat'] as Iterable)
+          .map((e) => RoomMessage.fromJson(e))
+          .toList();
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -34,11 +30,15 @@ class Room {
     data['id'] = id;
     data['is_group'] = isGroup;
     data['group_name'] = groupName;
-    data['user_id'] = userId;
-    data['name'] = name;
-    data['value'] = value;
-    data['sender_name'] = senderName;
-    data['time_sent'] = timeSent;
+
     return data;
+  }
+
+  RoomMessage? getLastChat() {
+    if (chats.isEmpty) {
+      return null;
+    }
+
+    return chats.first;
   }
 }
