@@ -14,6 +14,13 @@ class RoomItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final displayName = room.isGroup == 0 && room.roomMember.isNotEmpty
+        ? room.roomMember.first.user.name
+        : room.groupName;
+    final lastSendAt = room.getLastChat() != null
+        ? DateFormat.Hm().format(room.getLastChat()!.createdAt!)
+        : "";
+
     return GestureDetector(
       child: Container(
         margin: const EdgeInsets.only(top: 10, bottom: 10),
@@ -21,9 +28,7 @@ class RoomItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CirleAvatarWithIndicator(
-              isOnline: true,
-            ),
+            const CirleAvatarWithIndicator(isOnline: true),
             Container(
               width: MediaQuery.of(context).size.width * 0.79,
               padding: const EdgeInsets.only(left: 8, top: 5),
@@ -32,13 +37,10 @@ class RoomItem extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Text("Undefined Chat"),
+                      Text(displayName),
                       const Spacer(),
                       Text(
-                        room.getLastChat() != null
-                            ? DateFormat.Hm()
-                                .format(room.getLastChat()!.createdAt!)
-                            : "",
+                        lastSendAt,
                         style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 11,

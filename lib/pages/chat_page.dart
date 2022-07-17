@@ -40,7 +40,7 @@ class _ChatPageState extends State<ChatPage> {
   late User user;
   late Subscription chatSubscription;
 
-  Stream<RoomMessage> handleSreamMessage(dynamic data) async* {
+  Stream<RoomMessage> handleStreamMessage(dynamic data) async* {
     log("masuk pak eko");
     if (data['message'] == null) {
       return;
@@ -50,7 +50,7 @@ class _ChatPageState extends State<ChatPage> {
     yield roomMessage;
   }
 
-  void handleIncomingMessage(User user) {
+  void firstLoadMessage(User user) {
     tp.getMessageFromRoom(room: widget.room, user: user).then((values) {
       setState(() {
         listMessages.addAll(values
@@ -59,14 +59,11 @@ class _ChatPageState extends State<ChatPage> {
               return m1.createdAt!.compareTo(m2.createdAt!);
             },
           ));
-
         streamMessage.add(listMessages);
       });
     }).catchError((err) {
       log(err.toString());
     });
-
-    moveToNewMessage();
   }
 
   void moveToNewMessage() {
@@ -92,7 +89,7 @@ class _ChatPageState extends State<ChatPage> {
     listMessages = [];
     user = up.getUserData!;
 
-    handleIncomingMessage(user);
+    firstLoadMessage(user);
     chatSubscription = tp.socket.getSubscription("room:${widget.room.id}");
     chatSubscription.publishStream
         .map<String>((e) => utf8.decode(e.data))
@@ -126,6 +123,11 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final displayName =
+        widget.room.isGroup == 0 && widget.room.roomMember.isNotEmpty
+            ? widget.room.roomMember.first.user.name
+            : widget.room.groupName;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -138,16 +140,16 @@ class _ChatPageState extends State<ChatPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    "Undefined Chat",
-                    style: TextStyle(
+                    displayName,
+                    style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  SizedBox(height: 5),
-                  Text(
+                  const SizedBox(height: 5),
+                  const Text(
                     "Online",
                     style: TextStyle(
                       fontWeight: FontWeight.normal,
