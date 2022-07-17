@@ -27,12 +27,12 @@ class _PageObrolanState extends State<PageObrolan> {
   late User user;
   late List<Room> listRooms;
   late Subscription subs;
-  final txtSearch = TextEditingController();
   late StreamSubscription<String> roomsListener;
+  final txtSearch = TextEditingController();
   final ScrollController scrollCtrl = ScrollController();
 
   int page = 1;
-  String search = "";
+  Timer? searchOnStoppedTyping;
 
   @override
   void initState() {
@@ -46,7 +46,9 @@ class _PageObrolanState extends State<PageObrolan> {
     roomsListener = subs.publishStream
         .map<String>((e) => utf8.decode(e.data))
         .listen((event) {
-      tp.getRooms(user: user, page: page, search: search).then((values) {
+      tp
+          .getRooms(user: user, page: page, search: txtSearch.text)
+          .then((values) {
         setState(() {
           listRooms = values;
         });
@@ -105,7 +107,9 @@ class _PageObrolanState extends State<PageObrolan> {
         body: RefreshIndicator(
           color: Colors.blue,
           onRefresh: () async {
-            tp.getRooms(user: user, page: page, search: search).then((values) {
+            tp
+                .getRooms(user: user, page: page, search: txtSearch.text)
+                .then((values) {
               setState(() {
                 listRooms = values;
               });
@@ -137,7 +141,7 @@ class _PageObrolanState extends State<PageObrolan> {
                         child: TextFormField(
                           controller: txtSearch,
                           cursorColor: Colors.grey,
-                          onChanged: (value) => search = txtSearch.text,
+                          onChanged: _onChangeHandler,
                           decoration: const InputDecoration(
                             border: InputBorder.none,
                             fillColor: Colors.grey,
@@ -157,7 +161,7 @@ class _PageObrolanState extends State<PageObrolan> {
                     future: tp.getRooms(
                       user: user,
                       page: page,
-                      search: search,
+                      search: txtSearch.text,
                     ),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -185,6 +189,27 @@ class _PageObrolanState extends State<PageObrolan> {
           ),
         ),
       ),
+    );
+  }
+
+  _onChangeHandler(String txtSrch) {
+    const duration = Duration(milliseconds: 800);
+    if (searchOnStoppedTyping != null) {
+      setState(() => searchOnStoppedTyping!.cancel()); // clear timer
+    }
+
+    setState(
+      () => searchOnStoppedTyping = Timer(duration, () {
+        tp
+            .getRooms(user: user, page: page, search: txtSearch.text)
+            .then((values) {
+          setState(() {
+            listRooms = values;
+          });
+        }).onError((error, stackTrace) {
+          log(error.toString());
+        });
+      }),
     );
   }
 }
