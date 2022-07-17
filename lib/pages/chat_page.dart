@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:centrifuge/centrifuge.dart';
@@ -49,16 +50,26 @@ class _ChatPageState extends State<ChatPage> {
     yield roomMessage;
   }
 
-  void handleIncomingMessage(dynamic data) {
-    log("Incoming message.. ");
-    if (data['message'] == null) {
-      return;
-    }
+  void handleIncomingMessage(User user) {
+    tp.getMessageFromRoom(room: widget.room, user: user).then((values) {
+      setState(() {
+        listMessages.addAll(values
+          ..sort(
+            (m1, m2) {
+              return m1.createdAt!.compareTo(m2.createdAt!);
+            },
+          ));
 
-    var roomMessage = RoomMessage.fromJson(data['message']);
-    listMessages.add(roomMessage);
-    streamMessage.add(listMessages);
+        streamMessage.add(listMessages);
+      });
+    }).catchError((err) {
+      log(err.toString());
+    });
 
+    moveToNewMessage();
+  }
+
+  void moveToNewMessage() {
     if (_groupedItemSc.isAttached) {
       _groupedItemSc.scrollTo(
         index: (listMessages.length - 1),
@@ -81,26 +92,30 @@ class _ChatPageState extends State<ChatPage> {
     listMessages = [];
     user = up.getUserData!;
 
-    tp.getMessageFromRoom(room: widget.room, user: user).then((values) {
-      setState(() {
-        listMessages.addAll(values
-          ..sort(
-            (m1, m2) {
-              return m1.createdAt!.compareTo(m2.createdAt!);
-            },
-          ));
+    handleIncomingMessage(user);
+    chatSubscription = tp.socket.getSubscription("room:${widget.room.id}");
+    chatSubscription.publishStream
+        .map<String>((e) => utf8.decode(e.data))
+        .listen((data) {
+      final d = json.decode(data) as Map<String, dynamic>;
+      if (d['chat'] == null) {
+        const snackbar =
+            SnackBar(content: Text("Failed to listen to new chat"));
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
 
+        return;
+      }
+
+      var message = RoomMessage.fromJson(d['chat']);
+      setState(() {
+        listMessages.add(message);
         streamMessage.add(listMessages);
       });
-    }).catchError((err) {
-      log(err.toString());
+
+      moveToNewMessage();
     });
 
-    chatSubscription = tp.socket.getSubscription("room:${widget.room.id}");
     chatSubscription.subscribe();
-    // Map<String, dynamic> payload = {"room_id": widget.room.id};
-    // tp.socket.emit("subscribe_room", payload);
-    // tp.socket.on("message", handleIncomingMessage);
   }
 
   @override

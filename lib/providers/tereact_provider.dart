@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'package:centrifuge/centrifuge.dart';
 import 'package:dio/dio.dart';
@@ -77,7 +78,7 @@ class TereactProvider extends ChangeNotifier {
         ),
       );
 
-      log(response.data.toString());
+      log(json.encode(response.data));
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list contacts";
       }
