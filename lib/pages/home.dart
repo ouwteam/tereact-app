@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: Colors.blue,
           child: const Icon(Icons.add),
         ),
         body: RefreshIndicator(
