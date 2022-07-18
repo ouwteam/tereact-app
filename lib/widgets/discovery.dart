@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tereact/pages/search_user.dart';
 import 'package:tereact/widgets/saya.dart';
 
 class DiscoveryPage extends StatefulWidget {
@@ -19,7 +20,12 @@ class _DiscoveryPageState extends State<DiscoveryPage> {
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SearchUserPage(),
+              ),
+            ),
             icon: const Icon(Icons.search_outlined),
           )
         ],
