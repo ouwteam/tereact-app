@@ -35,6 +35,11 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Image.asset(
+              "assets/logos/bar-logo.png",
+              width: MediaQuery.of(context).size.width,
+              height: 55,
+            ),
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               height: 50,
