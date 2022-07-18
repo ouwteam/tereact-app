@@ -5,7 +5,6 @@ import 'dart:developer';
 import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tereact/common/helper.dart';
 import 'package:tereact/components/room_item_card.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/user.dart';
@@ -80,6 +79,7 @@ class _PageObrolanState extends State<PageObrolan> {
         return true;
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
         floatingActionButton: FloatingActionButton(
           elevation: 0,

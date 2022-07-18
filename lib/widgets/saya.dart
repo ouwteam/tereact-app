@@ -17,6 +17,7 @@ class PageSaya extends StatelessWidget {
     User user = up.getUserData!;
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(top: 50, left: 25, right: 25),

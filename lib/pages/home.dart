@@ -3,6 +3,7 @@
 import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:tereact/common/helper.dart';
+import 'package:tereact/widgets/contact.dart';
 import 'package:tereact/widgets/discovery.dart';
 import 'package:tereact/widgets/obrolan.dart';
 import 'package:tereact/widgets/saya.dart';
@@ -35,10 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     _widgetOptions = [
       const PageObrolan(),
-      const Text(
-        'Kontak',
-        style: optionStyle,
-      ),
+      const ContactPage(),
       const DiscoveryPage(),
       const PageSaya(),
     ];
@@ -55,6 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
         showSelectedLabels: true,
         showUnselectedLabels: true,
         items: const [
