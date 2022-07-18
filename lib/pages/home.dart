@@ -3,6 +3,7 @@
 import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:tereact/common/helper.dart';
+import 'package:tereact/widgets/discovery.dart';
 import 'package:tereact/widgets/obrolan.dart';
 import 'package:tereact/widgets/saya.dart';
 
@@ -38,10 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Kontak',
         style: optionStyle,
       ),
-      const Text(
-        'Temukan',
-        style: optionStyle,
-      ),
+      const DiscoveryPage(),
       const PageSaya(),
     ];
   }
