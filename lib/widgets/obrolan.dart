@@ -90,19 +90,6 @@ class _PageObrolanState extends State<PageObrolan> {
         appBar: AppBar(
           elevation: 0,
           title: const Text("TEREACT"),
-          actions: [
-            IconButton(
-              onPressed: () {
-                up.handleLogout().then((_) {
-                  Helper.authChecker(context);
-                });
-
-                var snackBar = const SnackBar(content: Text("Logout berhasil"));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
-              icon: const Icon(Icons.power_outlined),
-            ),
-          ],
         ),
         body: RefreshIndicator(
           color: Colors.blue,

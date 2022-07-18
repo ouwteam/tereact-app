@@ -4,6 +4,7 @@ import 'package:centrifuge/centrifuge.dart';
 import 'package:flutter/material.dart';
 import 'package:tereact/common/helper.dart';
 import 'package:tereact/widgets/obrolan.dart';
+import 'package:tereact/widgets/saya.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -41,10 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'Temukan',
         style: optionStyle,
       ),
-      const Text(
-        'Saya',
-        style: optionStyle,
-      ),
+      const PageSaya(),
     ];
   }
 
