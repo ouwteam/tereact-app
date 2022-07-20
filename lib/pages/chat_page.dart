@@ -67,7 +67,13 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   void firstLoadMessage(User user) {
-    tp.getMessageFromRoom(room: widget.room, user: user).then((values) {
+    tp
+        .getMessageFromRoom(
+      context,
+      room: widget.room,
+      user: user,
+    )
+        .then((values) {
       setState(() {
         listMessages.addAll(values
           ..sort(
@@ -277,6 +283,7 @@ class _ChatPageState extends State<ChatPage> {
                     IconButton(
                       onPressed: () {
                         tp.sendMessageToRoom(
+                          context,
                           user: user,
                           roomId: widget.room.id,
                           strMessage: txtMessage.text,

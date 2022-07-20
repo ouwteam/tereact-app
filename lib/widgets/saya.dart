@@ -18,7 +18,10 @@ class PageSaya extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder(
-          future: up.handleGetUserDetail(user),
+          future: up.handleGetUserDetail(
+            context,
+            user: user,
+          ),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(

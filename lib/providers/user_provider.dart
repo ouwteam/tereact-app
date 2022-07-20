@@ -3,21 +3,16 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tereact/common/constant.dart';
 import 'package:tereact/entities/user.dart';
+import 'package:tereact/providers/api_provider.dart';
 
 class UserProvider extends ChangeNotifier {
   final loginUrl = "/login";
   final registerUrl = "/user";
   final userDetailUrl = "/user/get-data";
-  final dio = Dio(BaseOptions(
-    connectTimeout: 9000,
-    receiveDataWhenStatusError: true,
-    validateStatus: (status) {
-      return (status ?? 0) < 500;
-    },
-  ));
 
   late String _errorMessage;
   String get getErrorMessage => _errorMessage;
@@ -38,15 +33,15 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<User?> handleLogin({
+  Future<User?> handleLogin(
+    BuildContext context, {
     required String username,
     required String password,
   }) async {
     try {
-      String url = baseUrl + loginUrl;
-      log(url);
-      Response response = await dio.post(
-        url,
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      Response response = await api.dio().post(
+        loginUrl,
         data: {
           "email": username,
           "password": password,
@@ -86,13 +81,16 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  Future<User?> handleRegister(User user) async {
+  Future<User?> handleRegister(
+    BuildContext context, {
+    required User user,
+  }) async {
     try {
-      String url = baseUrl + registerUrl;
-      Response response = await dio.post(
-        url,
-        data: user.toJson(),
-      );
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      Response response = await api.dio().post(
+            registerUrl,
+            data: user.toJson(),
+          );
 
       log("response.statusCode: ${response.statusCode}");
       log(response.data.toString());
@@ -142,15 +140,18 @@ class UserProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<User> handleGetUserDetail(User user) async {
+  Future<User> handleGetUserDetail(
+    BuildContext context, {
+    required User user,
+  }) async {
     try {
-      log(baseUrl + userDetailUrl);
-      final response = await dio.get(
-        baseUrl + userDetailUrl,
-        options: Options(
-          headers: {"Authorization": "Bearer ${user.token}"},
-        ),
-      );
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      final response = await api.dio().get(
+            userDetailUrl,
+            options: Options(
+              headers: {"Authorization": "Bearer ${user.token}"},
+            ),
+          );
 
       log(response.data.toString());
       if (response.statusCode != 200) {

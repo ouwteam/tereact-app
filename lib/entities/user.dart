@@ -1,4 +1,4 @@
-import 'package:tereact/common/constant.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 class User {
   User({
@@ -26,7 +26,7 @@ class User {
     phoneNumber = json['phone_number'];
     token = json['token'];
     password = json['password'];
-    photoProfile = json['photo_profile'];
+    photoProfile = json['photo_profile'] ?? "";
   }
 
   Map<String, dynamic> toJson() {
@@ -43,7 +43,8 @@ class User {
 
   String getAvatar() {
     if (photoProfile == "") {
-      return defaultAvatar;
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      return remoteConfig.getString("default_avatar");
     }
 
     return photoProfile;

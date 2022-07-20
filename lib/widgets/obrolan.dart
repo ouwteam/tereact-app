@@ -46,7 +46,12 @@ class _PageObrolanState extends State<PageObrolan> {
         .map<String>((e) => utf8.decode(e.data))
         .listen((event) {
       tp
-          .getRooms(user: user, page: page, search: txtSearch.text)
+          .getRooms(
+        context,
+        user: user,
+        page: page,
+        search: txtSearch.text,
+      )
           .then((values) {
         setState(() {
           listRooms = values;
@@ -95,7 +100,12 @@ class _PageObrolanState extends State<PageObrolan> {
           color: Colors.blue,
           onRefresh: () async {
             tp
-                .getRooms(user: user, page: page, search: txtSearch.text)
+                .getRooms(
+              context,
+              user: user,
+              page: page,
+              search: txtSearch.text,
+            )
                 .then((values) {
               setState(() {
                 listRooms = values;
@@ -146,6 +156,7 @@ class _PageObrolanState extends State<PageObrolan> {
                   margin: const EdgeInsets.all(12),
                   child: FutureBuilder(
                     future: tp.getRooms(
+                      context,
                       user: user,
                       page: page,
                       search: txtSearch.text,
@@ -188,7 +199,12 @@ class _PageObrolanState extends State<PageObrolan> {
     setState(
       () => searchOnStoppedTyping = Timer(duration, () {
         tp
-            .getRooms(user: user, page: page, search: txtSearch.text)
+            .getRooms(
+          context,
+          user: user,
+          page: page,
+          search: txtSearch.text,
+        )
             .then((values) {
           setState(() {
             listRooms = values;

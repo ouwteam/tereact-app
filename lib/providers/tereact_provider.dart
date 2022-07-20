@@ -1,44 +1,44 @@
+// ignore_for_file: unnecessary_getters_setters
+
 import 'dart:convert';
 import 'dart:developer';
 import 'package:centrifuge/centrifuge.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:tereact/common/constant.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/room_message.dart';
 import 'package:tereact/entities/user.dart';
+import 'package:tereact/providers/api_provider.dart';
 
 class TereactProvider extends ChangeNotifier {
   final String listMessagesUrl = "/chat";
   final String listRoomUrl = "/room";
   final String createRoomUrl = "/room/create";
   final String sentToRoomUrl = "/chat";
-  final dio = Dio(BaseOptions(
-    connectTimeout: 9000,
-    receiveDataWhenStatusError: true,
-    validateStatus: (status) {
-      return (status ?? 0) < 500;
-    },
-  ));
-
   late Client socket;
 
-  Future<List<RoomMessage>> getMessageFromRoom({
+  late FirebaseRemoteConfig _remoteConfig;
+  FirebaseRemoteConfig get remoteConfig => _remoteConfig;
+  set remoteConfig(FirebaseRemoteConfig remoteConfig) {
+    _remoteConfig = remoteConfig;
+  }
+
+  Future<List<RoomMessage>> getMessageFromRoom(
+    BuildContext context, {
     required Room room,
     required User user,
   }) async {
     try {
-      String url = baseUrl + listMessagesUrl;
-      log(url);
-      log({"room_id": room.id}.toString());
-      log("user.token: ${user.token}");
-      Response response = await dio.get(
-        url,
-        queryParameters: {"room_id": room.id},
-        options: Options(
-          headers: {"Authorization": "Bearer ${user.token}"},
-        ),
-      );
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      Response response = await api.dio().get(
+            listMessagesUrl,
+            queryParameters: {"room_id": room.id},
+            options: Options(
+              headers: {"Authorization": "Bearer ${user.token}"},
+            ),
+          );
 
       if (response.statusCode != 200) {
         throw response.statusMessage ?? "Failed to get list message";
@@ -63,32 +63,26 @@ class TereactProvider extends ChangeNotifier {
     return [];
   }
 
-  Future<List<Room>> getRooms({
+  Future<List<Room>> getRooms(
+    BuildContext context, {
     required User user,
     int page = 1,
     String search = "",
   }) async {
     try {
-      String url = baseUrl + listRoomUrl;
-      log(url);
-      log({
-        "queryParameters": {
-          "page": page,
-          "query": search,
-        }
-      }.toString());
-      Response response = await dio.get(
-        url,
-        queryParameters: {
-          "page": page,
-          "query": search,
-        },
-        options: Options(
-          headers: {
-            "Authorization": "Bearer ${user.token}",
-          },
-        ),
-      );
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      Response response = await api.dio().get(
+            listRoomUrl,
+            queryParameters: {
+              "page": page,
+              "query": search,
+            },
+            options: Options(
+              headers: {
+                "Authorization": "Bearer ${user.token}",
+              },
+            ),
+          );
 
       log(json.encode(response.data));
       if (response.statusCode != 200) {
@@ -125,12 +119,12 @@ class TereactProvider extends ChangeNotifier {
 
   // Return nya adalah message yang
   // barusan di input
-  Future<RoomMessage?> sendMessageToRoom({
+  Future<RoomMessage?> sendMessageToRoom(
+    BuildContext context, {
     required User user,
     required int roomId,
     required String strMessage,
   }) async {
-    var url = baseUrl + sentToRoomUrl;
     try {
       var payload = {
         "room_id": roomId,
@@ -139,17 +133,17 @@ class TereactProvider extends ChangeNotifier {
         "reply_chat_id": 0,
         "value": strMessage
       };
-      log(url);
-      log(payload.toString());
-      Response response = await dio.post(
-        url,
-        data: payload,
-        options: Options(
-          headers: {
-            "Authorization": "Bearer ${user.token}",
-          },
-        ),
-      );
+
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      Response response = await api.dio().post(
+            sentToRoomUrl,
+            data: payload,
+            options: Options(
+              headers: {
+                "Authorization": "Bearer ${user.token}",
+              },
+            ),
+          );
 
       log("response.data: ");
       log(response.data.toString());

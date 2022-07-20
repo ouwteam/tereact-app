@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/pages/blankpage.dart';
 import 'package:tereact/pages/login_page.dart';
-import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -72,7 +71,6 @@ class _RegisterPageState extends State<RegisterPage> {
               child: TextButton(
                 onPressed: () async {
                   var up = Provider.of<UserProvider>(context, listen: false);
-                  var tp = Provider.of<TereactProvider>(context, listen: false);
 
                   try {
                     User user = User(
@@ -82,7 +80,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       phoneNumber: txtUsername.text,
                     );
 
-                    await up.handleRegister(user);
+                    await up.handleRegister(
+                      context,
+                      user: user,
+                    );
                   } catch (e) {
                     var snackBar = SnackBar(
                       content: Text(e.toString()),
@@ -95,9 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => BlankPage(
-                        socket: tp.socket,
-                      ),
+                      builder: (BuildContext context) => const BlankPage(),
                     ),
                   );
                 },

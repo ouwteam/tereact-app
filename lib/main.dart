@@ -1,27 +1,24 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:tereact/common/constant.dart';
 import 'package:tereact/pages/blankpage.dart';
 import 'package:provider/provider.dart';
+import 'package:tereact/providers/api_provider.dart';
 import 'package:tereact/providers/tereact_provider.dart';
 import 'package:tereact/providers/user_provider.dart';
-import 'package:centrifuge/centrifuge.dart';
 
 void main() {
-  final socket = createClient(wsBaseUrl);
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  Firebase.initializeApp();
 
-  runApp(MyApp(socket: socket));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final Client socket;
-
   const MyApp({
     Key? key,
-    required this.socket,
   }) : super(key: key);
 
   @override
@@ -38,6 +35,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UserProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ApiProvider(),
+        ),
       ],
       builder: (context, child) => MaterialApp(
         title: 'Tereact',
@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
             onPrimary: Colors.black,
           ),
         ),
-        home: BlankPage(socket: socket),
+        home: const BlankPage(),
       ),
     );
   }
