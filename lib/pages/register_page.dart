@@ -22,22 +22,17 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: false,
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 30),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              "TEREACT",
-              style: TextStyle(fontSize: 24),
-            ),
-            const Text(
-              "we make sure everyone hear you",
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey,
-              ),
+            Image.asset(
+              "assets/logos/bar-logo.png",
+              width: MediaQuery.of(context).size.width,
+              height: 55,
             ),
             Container(
               margin: const EdgeInsets.only(bottom: 10, top: 60),

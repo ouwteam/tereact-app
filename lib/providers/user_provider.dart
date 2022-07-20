@@ -10,6 +10,7 @@ import 'package:tereact/entities/user.dart';
 class UserProvider extends ChangeNotifier {
   final loginUrl = "/login";
   final registerUrl = "/user";
+  final userDetailUrl = "/user/get-data";
   final dio = Dio(BaseOptions(
     connectTimeout: 9000,
     receiveDataWhenStatusError: true,
@@ -139,5 +140,29 @@ class UserProvider extends ChangeNotifier {
     }
 
     return true;
+  }
+
+  Future<User> handleGetUserDetail(User user) async {
+    try {
+      log(baseUrl + userDetailUrl);
+      final response = await dio.get(
+        baseUrl + userDetailUrl,
+        options: Options(
+          headers: {"Authorization": "Bearer ${user.token}"},
+        ),
+      );
+
+      log(response.data.toString());
+      if (response.statusCode != 200) {
+        throw response.statusMessage ?? "Unknow error";
+      }
+
+      final userData = User.fromJson(response.data['data']['user']);
+      return userData;
+    } catch (e, stack) {
+      log(e.toString());
+      log("Here is the stack: $stack");
+      throw e.toString();
+    }
   }
 }

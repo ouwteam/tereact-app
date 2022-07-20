@@ -1,3 +1,5 @@
+import 'package:tereact/common/constant.dart';
+
 class User {
   User({
     this.id,
@@ -6,11 +8,14 @@ class User {
     required this.phoneNumber,
     this.token,
     this.password,
+    this.photoProfile = "",
   });
+
   int? id;
   late final String email;
   late final String name;
   late final String phoneNumber;
+  late String photoProfile;
   String? token;
   String? password;
 
@@ -21,6 +26,7 @@ class User {
     phoneNumber = json['phone_number'];
     token = json['token'];
     password = json['password'];
+    photoProfile = json['photo_profile'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +37,15 @@ class User {
     data['phone_number'] = phoneNumber;
     data['token'] = token;
     data['password'] = password;
+    data['photo_profile'] = photoProfile;
     return data;
+  }
+
+  String getAvatar() {
+    if (photoProfile == "") {
+      return defaultAvatar;
+    }
+
+    return photoProfile;
   }
 }
