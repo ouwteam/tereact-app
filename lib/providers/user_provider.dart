@@ -12,6 +12,7 @@ import 'package:tereact/providers/api_provider.dart';
 class UserProvider extends ChangeNotifier {
   final loginUrl = "/login";
   final registerUrl = "/user";
+  final findUsersUrl = "/user";
   final userDetailUrl = "/user/get-data";
 
   late String _errorMessage;
@@ -160,6 +161,39 @@ class UserProvider extends ChangeNotifier {
 
       final userData = User.fromJson(response.data['data']['user']);
       return userData;
+    } catch (e, stack) {
+      log(e.toString());
+      log("Here is the stack: $stack");
+      throw e.toString();
+    }
+  }
+
+  Future<List<User>> findUsers(
+    BuildContext context, {
+    required User user,
+    required String search,
+  }) async {
+    try {
+      ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
+      final response = await api.dio().get(
+        findUsersUrl,
+        options: Options(
+          headers: {"Authorization": "Bearer ${user.token}"},
+        ),
+        queryParameters: {
+          "query": search,
+        },
+      );
+
+      log(response.data.toString());
+      if (response.statusCode != 200) {
+        throw response.statusMessage ?? "Unknow error";
+      }
+
+      final userDatas = (response.data['data']['user'] as Iterable)
+          .map((e) => User.fromJson(e))
+          .toList();
+      return userDatas;
     } catch (e, stack) {
       log(e.toString());
       log("Here is the stack: $stack");
