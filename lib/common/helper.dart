@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/pages/login_page.dart';
@@ -14,5 +17,17 @@ class Helper {
       context,
       MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
     );
+  }
+
+  static bool isEmpty(dynamic obj) {
+    if (obj.toString().isEmpty) {
+      return true;
+    }
+
+    if (obj.toString() == "{}") {
+      return true;
+    }
+
+    return false;
   }
 }

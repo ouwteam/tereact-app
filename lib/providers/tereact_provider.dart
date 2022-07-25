@@ -122,8 +122,9 @@ class TereactProvider extends ChangeNotifier {
   Future<RoomMessage?> sendMessageToRoom(
     BuildContext context, {
     required User user,
-    required int roomId,
     required String strMessage,
+    int? roomId,
+    String? phoneNumber,
   }) async {
     try {
       var payload = {
@@ -131,7 +132,8 @@ class TereactProvider extends ChangeNotifier {
         "type": 1,
         "is_reply": 0,
         "reply_chat_id": 0,
-        "value": strMessage
+        "value": strMessage,
+        "phone_number": phoneNumber,
       };
 
       ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
@@ -157,6 +159,7 @@ class TereactProvider extends ChangeNotifier {
       }
 
       RoomMessage message = RoomMessage.fromJson(data['data']['chat']);
+      message.room = Room.fromJson(data['data']['room']);
       return message;
     } catch (e, stack) {
       log(e.toString());

@@ -22,7 +22,7 @@ class _SearchUserPageState extends State<SearchUserPage> {
   late Future<List<User>> futurInstance;
 
   Future<List<User>> handleSearchAction({bool clear = false}) async {
-    if (clear) {
+    if (clear || txtSearch.text.isEmpty) {
       return [];
     }
 

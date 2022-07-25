@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
   final loginUrl = "/login";
   final registerUrl = "/user";
   final findUsersUrl = "/user";
-  final userDetailUrl = "/user/get-data";
+  final userDetailUrl = "/user/find-user";
 
   late String _errorMessage;
   String get getErrorMessage => _errorMessage;
@@ -144,15 +144,19 @@ class UserProvider extends ChangeNotifier {
   Future<User> handleGetUserDetail(
     BuildContext context, {
     required User user,
+    int? userId,
   }) async {
     try {
       ApiProvider api = Provider.of<ApiProvider>(context, listen: false);
       final response = await api.dio().get(
-            userDetailUrl,
-            options: Options(
-              headers: {"Authorization": "Bearer ${user.token}"},
-            ),
-          );
+        userDetailUrl,
+        options: Options(
+          headers: {"Authorization": "Bearer ${user.token}"},
+        ),
+        queryParameters: {
+          "user_id": userId,
+        },
+      );
 
       log(response.data.toString());
       if (response.statusCode != 200) {

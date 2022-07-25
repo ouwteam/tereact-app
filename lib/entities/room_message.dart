@@ -1,3 +1,7 @@
+import 'dart:developer';
+
+import 'package:tereact/common/helper.dart';
+import 'package:tereact/entities/room.dart';
 import 'package:tereact/entities/user.dart';
 
 class RoomMessage {
@@ -15,6 +19,7 @@ class RoomMessage {
     required this.updatedAt,
     required this.deletedAt,
     required this.sender,
+    required this.room,
   });
 
   late final int id;
@@ -29,6 +34,7 @@ class RoomMessage {
   late final DateTime? createdAt;
   late final DateTime? updatedAt;
   late final DateTime? deletedAt;
+  late final Room? room;
   late final User sender;
 
   RoomMessage.fromJson(Map<String, dynamic> json) {
@@ -45,7 +51,11 @@ class RoomMessage {
     updatedAt = DateTime.tryParse(json['updated_at']);
     deletedAt = DateTime.tryParse(json['deleted_at']);
 
-    if (json['user'] != null) {
+    if (!Helper.isEmpty(json['room'])) {
+      room = Room.fromJson(json['room']);
+    }
+
+    if (!Helper.isEmpty(json['user'])) {
       sender = User.fromJson(json['user']);
     }
   }
