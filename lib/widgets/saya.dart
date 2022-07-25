@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -8,12 +6,17 @@ import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/user_provider.dart';
 
 class PageSaya extends StatelessWidget {
-  const PageSaya({Key? key}) : super(key: key);
+  final User? userInstance;
+
+  const PageSaya({
+    Key? key,
+    this.userInstance,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     UserProvider up = Provider.of<UserProvider>(context, listen: false);
-    User user = up.getUserData!;
+    User user = userInstance == null ? up.getUserData! : userInstance!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -24,8 +27,9 @@ class PageSaya extends StatelessWidget {
           ),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const Center(
-                child: Text("Failed to load user detail"),
+              return Center(
+                child: Text(
+                    "Failed to load user detail: ${snapshot.error.toString()}"),
               );
             }
 

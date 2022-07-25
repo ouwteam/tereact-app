@@ -1,9 +1,13 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tereact/common/helper.dart';
 import 'package:tereact/entities/user.dart';
 import 'package:tereact/providers/user_provider.dart';
+import 'package:tereact/widgets/form_search_users.dart';
+import 'package:tereact/widgets/saya.dart';
 
 class SearchUserPage extends StatefulWidget {
   const SearchUserPage({Key? key}) : super(key: key);
@@ -62,30 +66,7 @@ class _SearchUserPageState extends State<SearchUserPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        title: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(33, 158, 158, 158),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search_outlined),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: TextFormField(
-                  controller: txtSearch,
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Cari dengan email/phone/nama",
-                    hintStyle: TextStyle(fontSize: 11),
-                  ),
-                  cursorColor: Colors.blue,
-                ),
-              ),
-            ],
-          ),
-        ),
+        title: FormSearchUsers(txtSearch: txtSearch),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -110,22 +91,35 @@ class _SearchUserPageState extends State<SearchUserPage> {
             return ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {
-                final item = list[index];
-                return Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 22,
-                        backgroundImage:
-                            CachedNetworkImageProvider(item.getAvatar()),
+                final mUser = list[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PageSaya(
+                          userInstance: mUser,
+                        ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(left: 12),
-                        child: Text(item.name),
-                      ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 22,
+                          backgroundImage: CachedNetworkImageProvider(
+                            mUser.getAvatar(),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 12),
+                          child: Text(mUser.name),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               },
